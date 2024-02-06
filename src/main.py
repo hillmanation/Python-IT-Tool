@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         # Set window properties
         self.setFixedSize(QSize(800, 600))
         self.setWindowTitle("SDS User Management Tool")
-        self.setWindowIcon(QtGui.QIcon('assets/images/GE-Monogram.ico'))
+        self.setWindowIcon(QtGui.QIcon('assets/images/jake-head-icon.ico'))
 
         # Tab widget to hold multiple forms
         self.tabs = QTabWidget(self.central_widget)
