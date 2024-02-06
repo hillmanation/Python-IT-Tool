@@ -6,6 +6,7 @@ mapping = {  # Map plain text to match a function we will call as a new tab
     "pspromptUI": psformUI
 }
 
+
 class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
     # Define main window and layout
     def __init__(self, parent=None):
