@@ -1,9 +1,9 @@
 from import_modules import *
 
 mapping = {  # Map plain text to match a function we will call as a new tab
-    "newuserUI": newuserformUI,
-    "usersearchUI": usersearchformUI,
-    "pspromptUI": psformUI
+    "new user": newuserformUI,
+    "user search": usersearchformUI,
+    "ps prompt": psformUI
 }
 
 
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         self.tabs.formsTab.setLayout(layout)
 
     def open_form(self, name):
-        ui_name = name.lower() + "UI"
+        ui_name = name.lower()
         form_call = mapping.get(str(ui_name))
         try:
             if form_call:
