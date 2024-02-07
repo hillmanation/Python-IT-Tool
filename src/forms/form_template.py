@@ -2,8 +2,9 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 
-class templateUI:
+class templateUI(QWidget):
     def __init__(self, main_app):
+        super(templateUI, self).__init__(main_app)  # Pass main_app as the parent
         ##print("Initializing templateUI")
         try:
             self.main_app = main_app
@@ -15,8 +16,7 @@ class templateUI:
         try:
             title = "Template"
 
-            template_tab = QWidget()
-            template_layout = QVBoxLayout(template_tab)
+            template_layout = QVBoxLayout(self)
 
             template_label = QLabel("Template")
             font = template_label.font()
@@ -25,7 +25,7 @@ class templateUI:
             template_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
             template_layout.addWidget(template_label)
 
-            tabindex = self.main_app.tabs.addTab(template_tab, title)
+            tabindex = self.main_app.tabs.addTab(self, title)
             self.main_app.tabs.setCurrentIndex(tabindex)
 
         except Exception as e:

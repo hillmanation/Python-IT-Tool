@@ -1,27 +1,10 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QGridLayout
 
-'''def usersearchformUI():
-    title = "User Search"
 
-    layout = QGridLayout()
-
-    newuserLabel = QLabel("User Search")
-
-    font = newuserLabel.font()
-    font.setPointSize(15)
-    newuserLabel.setFont(font)
-    newuserLabel.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-    layout.addWidget(newuserLabel)
-
-
-
-    return layout, title
-'''
-
-
-class usersearchformUI:
+class usersearchformUI(QWidget):
     def __init__(self, main_app):
+        super(usersearchformUI, self).__init__(main_app)  # Pass main_app as the parent
         # print("Initializing usersearchformUI")
         try:
             self.main_app = main_app
@@ -33,8 +16,7 @@ class usersearchformUI:
         try:
             title = "User Search"
 
-            usersearch_tab = QWidget()
-            usersearch_layout = QVBoxLayout(usersearch_tab)
+            usersearch_layout = QVBoxLayout(self)
 
             usersearch_label = QLabel("Search for a User")
             font = usersearch_label.font()
@@ -43,7 +25,7 @@ class usersearchformUI:
             usersearch_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
             usersearch_layout.addWidget(usersearch_label)
 
-            tabindex = self.main_app.tabs.addTab(usersearch_tab, title)
+            tabindex = self.main_app.tabs.addTab(self, title)
             self.main_app.tabs.setCurrentIndex(tabindex)
 
         except Exception as e:
