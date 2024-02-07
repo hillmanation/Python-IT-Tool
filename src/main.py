@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
 
         # Add a context menu to the tabs bar
         self.tabs.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        # noinspection PyUnresolvedReferences
         self.tabs.customContextMenuRequested.connect(self.show_tab_context_menu)
 
     # Define the individual tabs and their content
@@ -64,10 +65,10 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         layout.addWidget(self.formselection)
 
         # Button to select and open a form
-        selectButton = QPushButton("Select Form")
+        select_button = QPushButton("Select Form")
         # On clicking the select form button, send the selected text to open_form to handle opening the new tab
-        selectButton.clicked.connect(lambda: self.open_form(self.formselection.currentItem().text()))
-        layout.addWidget(selectButton)
+        select_button.clicked.connect(lambda: self.open_form(self.formselection.currentItem().text()))
+        layout.addWidget(select_button)
 
         self.tabs.formsTab.setLayout(layout)
 
@@ -91,13 +92,20 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
             if index > 0 and self.tabs.tabText(index) != "Tools":
                 # Show a context menu when right-clicking on a tab
                 context_menu = QMenu(self)
+
+                # Close Tab action
                 close_tab_action = QAction("Close Tab", self)
                 # Pass the index as data to the triggered signal
                 close_tab_action.triggered.connect(lambda: self.close_tab(index))
                 context_menu.addAction(close_tab_action)
 
-                context_menu.exec(self.tabs.mapToGlobal(point))
+                # Duplicate Tab action
+                duplicate_tab_action = QAction("Duplicate Tab", self)
+                # Pass the index as data to the triggered signal
+                duplicate_tab_action.triggered.connect(lambda: self.duplicate_tab(index))
+                context_menu.addAction(duplicate_tab_action)
 
+                context_menu.exec(self.tabs.mapToGlobal(point))
         except Exception as e:
             print(f"Error showing tab context menu: {e}")
 
@@ -118,6 +126,22 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
                 self.tabs.removeTab(index)
         except Exception as e:
             print(f"Error when closing tab: {e}")
+
+    def duplicate_tab(self, index):
+        try:
+            # Get the widget associated with the tab index
+            widget = self.tabs.widget(index)
+            if widget in self.current_form_instances:
+                # Create a new instance of the same class
+                widget_class = widget.__class__
+
+                duplicated_instance = widget_class(self)
+
+                # Store the duplicated instance in the list
+                self.current_form_instances.append(duplicated_instance)
+        except Exception as e:
+            print(f"Error when duplicating tab: {e}")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

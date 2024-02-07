@@ -44,9 +44,10 @@ class PowershellStylePrompt(QPlainTextEdit):
         self.insertPlainText(text)
 
 
-class psformUI:
+class psformUI(QWidget):
 
     def __init__(self, main_app):
+        super(psformUI, self).__init__(main_app)  # Pass main_app as the parent
         self.output_box = None
         self.command_input = None
         try:
@@ -59,8 +60,7 @@ class psformUI:
         try:
             title = "Powershell Console"
 
-            psform_tab = QWidget()
-            psform_layout = QVBoxLayout(psform_tab)
+            psform_layout = QVBoxLayout(self)
 
             newuser_label = QLabel("Powershell Prompt")
             font = newuser_label.font()
@@ -83,13 +83,13 @@ class psformUI:
             get_button.clicked.connect(self.runPS)
             psform_layout.addWidget(get_button)
 
-            tabindex = self.main_app.tabs.addTab(psform_tab, title)
+            tabindex = self.main_app.tabs.addTab(self, title)
             self.main_app.tabs.setCurrentIndex(tabindex)
         except Exception as e:
             print(f"An error occurred during UI setup: {e}")
 
     def runPS(self):
-        print("Running PS command")
+        # print("Running PS command")
         try:
             cmd = self.command_input.toPlainText()
             # print(cmd)
