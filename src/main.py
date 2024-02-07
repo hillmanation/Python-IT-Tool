@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
             index = self.tabs.tabBar().tabAt(point)
 
             # Only show the context menu if the right-clicked tab is not the 'Tools' tab
-            if index > 0 and self.tabs.tabText(index) != "Tools":
+            if index >= 0 and self.tabs.tabText(index) != "Tools":
                 # Show a context menu when right-clicking on a tab
                 context_menu = QMenu(self)
 
