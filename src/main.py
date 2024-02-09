@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         formnames = (os.listdir('forms'))
         for i in formnames:
             if i != "__pycache__" and i != "form_template.py":
-                self.formselection.addItem(str(i).replace('.py', ''))
+                self.formselection.addItem(str(i).replace('.py', '').replace('_', ' '))
 
         # Double-click an item to open the form
         self.formselection.doubleClicked.connect(lambda: self.open_form(self.formselection.currentItem().text()))
