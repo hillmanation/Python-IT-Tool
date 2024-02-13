@@ -2,7 +2,7 @@ import subprocess
 from PyQt6 import QtGui
 from PyQt6.QtCore import *
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTextEdit, QPlainTextEdit
 
 
@@ -83,8 +83,9 @@ class psformUI(QWidget):
             get_button.clicked.connect(self.runPS)
             psform_layout.addWidget(get_button)
 
-            tabindex = self.main_app.tabs.addTab(self, title)
-            self.main_app.tabs.setCurrentIndex(tabindex)
+            tab_index = self.main_app.tabs.addTab(self, title)
+            self.main_app.tabs.setTabIcon(tab_index, QIcon('assets/material-icons/ps_icon.png'))
+            self.main_app.tabs.setCurrentIndex(tab_index)
         except Exception as e:
             print(f"An error occurred during UI setup: {e}")
 

@@ -2,10 +2,9 @@ import subprocess
 
 ## Sample code for running a powershell command from python
 
-def runPS(cmd):
+def PSquery(cmd):
     completed = subprocess.run(["powershell", "-Command", cmd], capture_output=True)
-    print(completed)
-    return completed
+    return completed.stdout
 
 
 '''if __name__ == '__main__':
