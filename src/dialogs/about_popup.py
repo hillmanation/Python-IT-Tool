@@ -7,7 +7,7 @@ about_html = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About SDS User Management Tool</title>
+    <title>About Python User Management Tool</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -46,11 +46,11 @@ about_html = """
     </style>
 </head>
 <body>
-    <h1>SDS User Management Tool</h1>
+    <h1>Python User Management Tool</h1>
 
     <h2>About the Tool</h2>
     <p>
-        The SDS User Management Tool is a powerful and user-friendly application designed to streamline user management 
+        The Python User Management Tool is a powerful and user-friendly application designed to streamline user management 
         tasks within your organization.
     </p>
 
@@ -81,7 +81,7 @@ about_html = """
     <h2>Support</h2>
     <p>
         For inquiries, support, or feedback, please contact our support team at 
-        <a href="mailto:support@example.com">support@example.com</a>.
+        <a href="mailto:jake.hillman.it@gmail.com">jake.hillman.it@gmail.com</a>.
     </p>
 
     <footer>
