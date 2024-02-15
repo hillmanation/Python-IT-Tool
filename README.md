@@ -63,4 +63,4 @@ For inquiries, support, or feedback, please contact our support team at [jake.hi
 
 We would like to express our gratitude to the open-source community for their contributions and support in developing this tool.
 
-Thank you for choosing the SDS User Management Tool. We hope it enhances your user administration experience.
+Thank you for choosing the Python User Management Tool. We hope it enhances your user administration experience.
