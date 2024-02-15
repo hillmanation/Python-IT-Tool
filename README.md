@@ -1,6 +1,6 @@
-# SDS User Management Tool
+# Python User Management Tool
 
-The SDS User Management Tool is a robust and user-friendly application designed to simplify user management tasks within your organization. Whether you're an IT administrator, system operator, or anyone responsible for user-related operations, this tool aims to streamline your workflow.
+The Python User Management Tool is a robust and user-friendly application designed to simplify user management tasks within your organization. Whether you're an IT administrator, system operator, or anyone responsible for user-related operations, this tool aims to streamline your workflow.
 
 ## Features
 
@@ -34,7 +34,7 @@ Always exercise caution and ensure that you have appropriate backups and permiss
 
 ## Support
 
-For inquiries, support, or feedback, please contact our support team at [support@example.com](mailto:support@example.com). We value your input and are committed to providing assistance.
+For inquiries, support, or feedback, please contact our support team at [jake.hillman.it@gmail.com](mailto:jake.hillman.it@gmail.com). We value your input and are committed to providing assistance.
 
 ## Getting Started
 
@@ -64,11 +64,3 @@ For inquiries, support, or feedback, please contact our support team at [support
 We would like to express our gratitude to the open-source community for their contributions and support in developing this tool.
 
 Thank you for choosing the SDS User Management Tool. We hope it enhances your user administration experience.
-
----
-
-## Installing Python Packages From GE Intranet
--Disable Ethernet  
--In toolbar, Right-click > Exit on MyApps3  
--Connect to Public WiFi  
--Internet Python Packages are now able to be installed
