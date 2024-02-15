@@ -25,8 +25,8 @@ class templateUI(QWidget):
             template_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
             template_layout.addWidget(template_label)
 
-            tabindex = self.main_app.tabs.addTab(self, title)
-            self.main_app.tabs.setCurrentIndex(tabindex)
+            tab_index = self.main_app.tabs.addTab(self, title)
+            self.main_app.tabs.setCurrentIndex(tab_index)
 
         except Exception as e:
             print(f"The following error occurred: {e}")

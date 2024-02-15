@@ -2,12 +2,13 @@ import datetime
 from PyQt6.QtCore import *
 from PyQt6.QtGui import QIcon
 import PyQt6.QtWidgets
-from PyQt6.QtWidgets import QTableWidgetItem
-from User_Management.functions.ps import PSquery
+from PyQt6.QtWidgets import QTableWidgetItem, QWidget
+from src.functions.ps import PSquery
+from src.widgets.clearable_search_bar import ClearableSearchBar
 
 
 # noinspection PyUnresolvedReferences
-class usersearchformUI(PyQt6.QtWidgets.QWidget):
+class usersearchformUI(QWidget):
     def __init__(self, main_app):
         super(usersearchformUI, self).__init__(main_app)  # Pass main_app as the parent
 
@@ -30,13 +31,8 @@ class usersearchformUI(PyQt6.QtWidgets.QWidget):
             usersearch_label.setFont(font)
             usersearch_layout.addWidget(usersearch_label, 0, 0, 1, 1)
 
-            self.usersearch_box = PyQt6.QtWidgets.QLineEdit()
+            self.usersearch_box = ClearableSearchBar(self, "Enter User Name or SSO")
             self.usersearch_box.returnPressed.connect(self.sample_user_find)
-            self.usersearch_box.setPlaceholderText("Enter User Name or SSO")
-
-            # Add a search icon to usersearch_box
-            search_icon = QIcon.fromTheme("edit-find", QIcon('assets/material-icons/search_icon.png'))
-            self.usersearch_box.addAction(search_icon, PyQt6.QtWidgets.QLineEdit.ActionPosition.TrailingPosition)
             usersearch_layout.addWidget(self.usersearch_box, 1, 0, 1, 1)
 
             search_button = PyQt6.QtWidgets.QPushButton("Search") # Row 1, Column 1, Span 1 row, 1 column

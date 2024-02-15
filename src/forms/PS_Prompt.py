@@ -4,44 +4,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton, QTextEdit, QPlainTextEdit
-
-
-class CustomOutputBox(QPlainTextEdit):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setStyleSheet("color: white; background-color: MidnightBlue")
-    def appendPlainTextNoScroll(self, text):
-        # Save the current scrollbar value
-        scrollbar = self.verticalScrollBar()
-        scroll_position = scrollbar.value()
-
-        # Append the text
-        self.appendPlainText(text)
-
-        # Restore the scrollbar value
-        scrollbar.setValue(scroll_position)
-
-
-class PowershellStylePrompt(QPlainTextEdit):
-    enterKeyPressed = pyqtSignal()
-
-    def keyPressEvent(self, event):
-        try:
-            if event.key() in {Qt.Key.Key_Return, Qt.Key.Key_Enter}:
-                if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
-                    cursor = self.textCursor()
-                    cursor.movePosition(QtGui.QTextCursor.MoveOperation.EndOfBlock)
-                    cursor.insertBlock()
-                else:
-                    self.enterKeyPressed.emit()
-            else:
-                super().keyPressEvent(event)
-        except Exception as e:
-            print(f"Key press error: {e}")
-
-    def setPlainText(self, text):
-        self.clear()
-        self.insertPlainText(text)
+from src.widgets.powershell_classes import PSStyleOutput, PowershellStylePrompt
 
 
 class psformUI(QWidget):
@@ -73,7 +36,7 @@ class psformUI(QWidget):
             self.command_input.enterKeyPressed.connect(self.runPS)
             psform_layout.addWidget(self.command_input)
 
-            self.output_box = CustomOutputBox()
+            self.output_box = PSStyleOutput()
             self.output_box.setReadOnly(True)
             self.output_box.setFont(QFont("Lucida Console"))
             self.output_box.resize(QSize(400, 580))

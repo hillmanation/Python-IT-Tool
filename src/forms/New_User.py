@@ -2,7 +2,7 @@ import datetime, secrets, time, string
 from PyQt6.QtCore import *
 from PyQt6.QtGui import QIntValidator, QIcon, QCursor
 from PyQt6.QtWidgets import QLabel, QWidget, QGridLayout, QLineEdit, QCheckBox, QPushButton, QApplication, QToolTip
-from User_Management.functions.ps import PSquery
+from src.functions.ps import PSquery
 
 
 class newuserformUI(QWidget):  # Inherit from QWidget

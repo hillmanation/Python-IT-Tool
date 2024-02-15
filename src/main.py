@@ -76,10 +76,11 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
 
         formnames = (os.listdir('forms'))
         for i in formnames:
-            if i != "__pycache__" and i != "form_template.py":
+            if i != "__pycache__" and i != "form_template.py" and i != "README.md":
                 self.formselection.addItem(str(i).replace('_', ' ').replace('.py', ''))
 
-        # Double-click an item to open the form <TODO: Why does this have to be held down on the second click to get the tooltip to display for the full time?
+        # Double-click an item to open the form
+        # <TODO: Why does this have to be held down on the second click to get the tooltip to display for the full time?
         self.formselection.itemDoubleClicked.connect(lambda: self.open_form(self.formselection.currentItem().text()))
         layout.addWidget(self.formselection)
 
@@ -162,9 +163,23 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
                 close_all_tabs_action.triggered.connect(lambda: self.close_all_tabs(index))
                 context_menu.addAction(close_all_tabs_action)
 
+                # Seperator
+                separator_action = QAction(self)
+                separator_action.setSeparator(True)
+                context_menu.addAction(separator_action)
+
+                # About Info pop-up
+                about_info_action = QAction("About", self)
+                about_info_action.triggered.connect(self.open_about_info)
+                context_menu.addAction(about_info_action)
+
                 context_menu.exec(self.tabs.mapToGlobal(point))
         except Exception as e:
             print(f"Error showing tab context menu: {e}")
+
+    def open_about_info(self):
+        PopupWindow = AboutPopupWindow(self)
+        PopupWindow.exec()
 
     def close_tab(self, index):
         try:
@@ -247,7 +262,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         event.accept()
 
     def save_tab_state(self):
-        # Get the information of open tabs
+        # Get the currently open tabs
         open_tabs_info = []
         for index in range(self.tabs.count()):
             tab_title = self.tabs.tabText(index)
