@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPainter, QPixmap
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QTextEdit
 
 about_html = """
@@ -7,7 +7,7 @@ about_html = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Python User Management Tool</title>
+    <title>About SDS User Management Tool</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -46,11 +46,11 @@ about_html = """
     </style>
 </head>
 <body>
-    <h1>Python User Management Tool</h1>
+    <h1>SDS User Management Tool</h1>
 
     <h2>About the Tool</h2>
     <p>
-        The Python User Management Tool is a powerful and user-friendly application designed to streamline user management 
+        The SDS User Management Tool is a powerful and user-friendly application designed to streamline user management 
         tasks within your organization.
     </p>
 
@@ -81,7 +81,7 @@ about_html = """
     <h2>Support</h2>
     <p>
         For inquiries, support, or feedback, please contact our support team at 
-        <a href="mailto:jake.hillman.it@gmail.com">jake.hillman.it@gmail.com</a>.
+        <a href="mailto:support@example.com">support@example.com</a>.
     </p>
 
     <footer>
@@ -92,6 +92,30 @@ about_html = """
 """
 
 
+class WatermarkTextEdit(QTextEdit):
+    def __init__(self, parent=None):
+        super(WatermarkTextEdit, self).__init__(parent)
+        self.setReadOnly(True)
+        self.document().setHtml(about_html)
+
+    def paintEvent(self, event):
+        # Call the base class paintEvent to draw the text content
+        super().paintEvent(event)
+
+        # Draw the watermark image
+        painter = QPainter(self.viewport())
+        watermark_image = QPixmap('assets/images/jake-head.png')
+        painter.setOpacity(0.1)  # Adjust the opacity as needed
+        painter.drawPixmap(self.rect(), watermark_image)
+
+    def showEvent(self, event):
+        # Call the base class showEvent
+        super().showEvent(event)
+        # Scroll to the top after the widget is shown
+        self.verticalScrollBar().setValue(0)
+
+
+# noinspection PyUnresolvedReferences
 class AboutPopupWindow(QDialog):
     def __init__(self, parent=None):
         super(AboutPopupWindow, self).__init__(parent)
@@ -101,12 +125,10 @@ class AboutPopupWindow(QDialog):
         # Create a layout for the popup window
         layout = QVBoxLayout()
 
-        # Create a QTextEdit widget
-        about_text = QTextEdit()
-        about_text.setReadOnly(True)  # Make it read-only
-        about_text.setHtml(about_html)
+        # Create a WatermarkTextEdit widget
+        about_text = WatermarkTextEdit()
 
-        # Add the QTextEdit to the layout
+        # Add the WatermarkTextEdit to the layout
         layout.addWidget(about_text)
 
         # Add a "Close" button

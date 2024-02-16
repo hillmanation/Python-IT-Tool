@@ -1,5 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
+import src.assets.resources
 from PyQt6.QtWidgets import QLineEdit, QSizePolicy
 
 
@@ -11,8 +12,8 @@ class ClearableSearchBar(QLineEdit):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
         # Add a search icon to search bar
-        self.search_icon = QIcon.fromTheme("edit-find", QIcon('assets/material-icons/search_icon.png'))
-        self.clear_icon = QIcon.fromTheme("edit-find", QIcon('assets/material-icons/cancel_search.png'))
+        self.search_icon = QIcon.fromTheme("edit-find", QIcon(':/material-icons/search_icon.png'))
+        self.clear_icon = QIcon.fromTheme("edit-find", QIcon(':/material-icons/cancel_search.png'))
 
         # Connect signals
         self.textChanged.connect(self.update_clear_button_visibility)

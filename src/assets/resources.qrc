@@ -1,0 +1,18 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>images/jake-head.png</file>
+        <file>images/jake-head-icon.ico</file>
+        <file>images/GE-Monogram.ico</file>
+        <file>images/image.ico</file>
+        <file>material-icons/cancel_search.png</file>
+        <file>material-icons/ps_icon.png</file>
+        <file>material-icons/search_icon.png</file>
+        <file>material-icons/user_add_icon.png</file>
+        <file>material-icons/user_attributes.png</file>
+        <file>material-icons/user_group_icon.png</file>
+        <file>material-icons/user_icon.png</file>
+        <file>material-icons/user_manage.png</file>
+        <file>material-icons/user_search.png</file>
+    </qresource>
+</RCC>

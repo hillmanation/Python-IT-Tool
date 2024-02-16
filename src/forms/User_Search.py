@@ -1,17 +1,18 @@
 import datetime
+import src.assets.resources
 from PyQt6.QtCore import *
 from PyQt6.QtGui import QIcon
 import PyQt6.QtWidgets
 from PyQt6.QtWidgets import QTableWidgetItem, QWidget
-from src.functions.ps import PSquery
 from src.widgets.clearable_search_bar import ClearableSearchBar
 
 
 # noinspection PyUnresolvedReferences
-class usersearchformUI(QWidget):
+class usersearchform_ui(QWidget):
     def __init__(self, main_app):
-        super(usersearchformUI, self).__init__(main_app)  # Pass main_app as the parent
+        super(usersearchform_ui, self).__init__(main_app)  # Pass main_app as the parent
 
+        self.results_box = None
         self.usersearch_box = None
         try:
             self.main_app = main_app
@@ -64,7 +65,7 @@ class usersearchformUI(QWidget):
             usersearch_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
             tab_index = self.main_app.tabs.addTab(self, title)
-            self.main_app.tabs.setTabIcon(tab_index, QIcon('assets/material-icons/user_search.png'))
+            self.main_app.tabs.setTabIcon(tab_index, QIcon(':/material-icons/user_search.png'))
             self.main_app.tabs.setCurrentIndex(tab_index)
 
         except Exception as e:
@@ -98,7 +99,7 @@ class usersearchformUI(QWidget):
 
         if selected_row >= 0:
             sso = self.results_box.item(selected_row, 1).text()
-            self.main_app.open_form("user account")
+            self.main_app.open_form("User Account")
 
     def sample_user_find(self):
         search = self.usersearch_box.text()

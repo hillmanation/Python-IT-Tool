@@ -1,13 +1,13 @@
 import datetime, secrets, time, string
+import src.assets.resources
 from PyQt6.QtCore import *
 from PyQt6.QtGui import QIntValidator, QIcon, QCursor
 from PyQt6.QtWidgets import QLabel, QWidget, QGridLayout, QLineEdit, QCheckBox, QPushButton, QApplication, QToolTip
-from src.functions.ps import PSquery
 
 
-class newuserformUI(QWidget):  # Inherit from QWidget
+class newuserform_ui(QWidget):  # Inherit from QWidget
     def __init__(self, main_app):
-        super(newuserformUI, self).__init__(main_app)  # Pass main_app as the parent
+        super(newuserform_ui, self).__init__(main_app)  # Pass main_app as the parent
         self.reveal_checkbox = None
         self.temp_password = None
         self.roulette_button = None
@@ -136,7 +136,7 @@ class newuserformUI(QWidget):  # Inherit from QWidget
             newuser_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
             tab_index = self.main_app.tabs.addTab(self, title)  # Add self to tabs instead of newuser_tab
-            self.main_app.tabs.setTabIcon(tab_index, QIcon('assets/material-icons/user_add_icon.png'))
+            self.main_app.tabs.setTabIcon(tab_index, QIcon(':/material-icons/user_add_icon.png'))
             self.main_app.tabs.setCurrentIndex(tab_index)
 
             self.temp_password.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)

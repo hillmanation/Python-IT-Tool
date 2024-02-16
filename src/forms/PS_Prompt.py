@@ -1,4 +1,5 @@
 import subprocess
+import src.assets.resources
 from PyQt6 import QtGui
 from PyQt6.QtCore import *
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -7,10 +8,10 @@ from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QLineEdit, QPushButton
 from src.widgets.powershell_classes import PSStyleOutput, PowershellStylePrompt
 
 
-class psformUI(QWidget):
+class psform_ui(QWidget):
 
     def __init__(self, main_app):
-        super(psformUI, self).__init__(main_app)  # Pass main_app as the parent
+        super(psform_ui, self).__init__(main_app)  # Pass main_app as the parent
         self.output_box = None
         self.command_input = None
         try:
@@ -47,7 +48,7 @@ class psformUI(QWidget):
             psform_layout.addWidget(get_button)
 
             tab_index = self.main_app.tabs.addTab(self, title)
-            self.main_app.tabs.setTabIcon(tab_index, QIcon('assets/material-icons/ps_icon.png'))
+            self.main_app.tabs.setTabIcon(tab_index, QIcon(':/material-icons/ps_icon.png'))
             self.main_app.tabs.setCurrentIndex(tab_index)
         except Exception as e:
             print(f"An error occurred during UI setup: {e}")

@@ -1,3 +1,4 @@
+import src.assets.resources
 from PyQt6.QtCore import *
 from PyQt6.QtGui import QIcon
 from src.widgets.clearable_search_bar import ClearableSearchBar
@@ -6,9 +7,9 @@ from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QLineEdit, QTabWidget,
 from src.widgets.user_tab_widget import UserTabWidget
 
 
-class useraccountUI(QWidget):
+class useraccount_ui(QWidget):
     def __init__(self, main_app):
-        super(useraccountUI, self).__init__(main_app)
+        super(useraccount_ui, self).__init__(main_app)
 
         self.attribute_layout = None
         self.attribute_search_box = None
@@ -26,9 +27,9 @@ class useraccountUI(QWidget):
         attribute_tab = QWidget()
 
         general_tab_index = user_detail_tabs.addEditableTab(general_tab, "General",
-                                                            QIcon('assets/material-icons/user_manage.png'))
-        user_detail_tabs.addEditableTab(member_of_tab, "Groups", QIcon('assets/material-icons/user_group_icon.png'))
-        user_detail_tabs.addEditableTab(attribute_tab, "Attributes", QIcon('assets/material-icons/user_attributes.png'))
+                                                            QIcon(':/material-icons/user_manage.png'))
+        user_detail_tabs.addEditableTab(member_of_tab, "Groups", QIcon(':/material-icons/user_group_icon.png'))
+        user_detail_tabs.addEditableTab(attribute_tab, "Attributes", QIcon(':/material-icons/user_attributes.png'))
 
         # Apply rounded corners to the bottom corners of QTabWidget
         user_detail_tabs.setStyleSheet(
@@ -95,18 +96,20 @@ class useraccountUI(QWidget):
         user_detail_layout.addWidget(user_detail_tabs)
         user_detail_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        tab_index = self.main_app.tabs.addTab(self, full_name.text())
-        full_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, tab_index, general_tab))
-        logon_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, tab_index, general_tab))
-        first_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, tab_index, general_tab))
-        last_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, tab_index, general_tab))
-        description.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, tab_index, general_tab))
-        email.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, tab_index, general_tab))
-        self.main_app.tabs.setTabIcon(tab_index, QIcon('assets/material-icons/user_icon.png'))
+        tab_name = full_name.text()
+
+        tab_index = self.main_app.tabs.addTab(self, tab_name)
+        self.main_app.tabs.setTabIcon(tab_index, QIcon(':/material-icons/user_icon.png'))
         self.main_app.tabs.setCurrentIndex(tab_index)
+        full_name.textChanged.connect(
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+        logon_name.textChanged.connect(
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+        first_name.textChanged.connect(
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+        last_name.textChanged.connect(
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+        description.textChanged.connect(
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+        email.textChanged.connect(
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))

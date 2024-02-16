@@ -1,14 +1,14 @@
-from import_modules import *
+from src.import_modules import *
 
 mapping = {  # Map plain text to match a function we will call as a new tab
-    "new user": newuserformUI,
-    "user search": usersearchformUI,
-    "ps prompt": psformUI,
-    "user account": useraccountUI,
-    "powershell console": psformUI
+    "New User": newuserform_ui,
+    "User Search": usersearchform_ui,
+    "User Account": useraccount_ui,
+    "Powershell Console": psform_ui
 }
 
 
+# noinspection PyUnresolvedReferences
 class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
     # Define the paths as class variables
     APPDATA_LOCAL_PATH = os.path.join(os.environ['LOCALAPPDATA'])
@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
 
     # Define main window and layout
     def __init__(self, parent=None):
+        self.form_selection = None
         self.tabs = QTabWidget()
         super(MainWindow, self).__init__(parent)
 
@@ -30,8 +31,8 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
 
         # Set window properties
         self.setFixedSize(QSize(800, 600))
-        self.setWindowTitle("Python User Management Tool")
-        self.setWindowIcon(QtGui.QIcon('assets/images/jake-head.png'))
+        self.setWindowTitle("SDS User Management Tool")
+        self.setWindowIcon(QtGui.QIcon(':/images/GE-Monogram.ico'))
 
         # Tab widget to hold multiple forms
         self.tabs.setStyleSheet("QTabWidget::pane { border-bottom-left-radius: 5px; border-bottom-right-radius: "
@@ -39,15 +40,15 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         self.central_layout = QVBoxLayout(self.central_widget)
         self.central_layout.addWidget(self.tabs)
 
+        # Let's grab the domain this is being run on
+        self.config_update()
+
         # Define the main tab that will be used
         self.tabs.setMovable(True)
         self.tabs.formsTab = QWidget()
         tab_index = self.tabs.addTab(self.tabs.formsTab, "Tools")
-        self.tabs.setTabIcon(tab_index, QIcon('assets/images/jake-head.png'))
+        self.tabs.setTabIcon(tab_index, QIcon(':/images/jake-head.png'))
         self.formsTabUI()
-
-        # Let's grab the domain this is being run on
-        self.config_update()
 
         # Now load the saved tab instances from the previous session if they exist
         self.load_tab_state()
@@ -61,34 +62,53 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
 
     # Define the individual tabs and their content
     def formsTabUI(self):
-        layout = QVBoxLayout()
+        layout = QGridLayout()
 
         # Label for available tools
-        formslabel = QLabel("Available Tools:")
-        font = formslabel.font()
+        forms_label = QLabel("Available Tools")
+        font = forms_label.font()
         font.setPointSize(15)
-        formslabel.setFont(font)
-        formslabel.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(formslabel)
+        forms_label.setFont(font)
+        forms_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(forms_label, 0, 0, 1, 3)  # Row 0, Column 0, Span 1 row, 1 column
 
         # List widget for displaying available forms
-        self.formselection = QListWidget()
+        self.form_selection = QListWidget()  # <TODO: Change to a QTableWidget and reformat to add a 'Description' --->
+        # TODO:--->column for each form item
 
-        formnames = (os.listdir('forms'))
-        for i in formnames:
-            if i != "__pycache__" and i != "form_template.py" and i != "README.md":
-                self.formselection.addItem(str(i).replace('_', ' ').replace('.py', ''))
+        # Sort the list of form names
+        sorted_form_names = sorted(mapping.keys())
+
+        for form_name in sorted_form_names:  # Add the available forms by pulling their names from mapping
+            self.form_selection.addItem(form_name)
 
         # Double-click an item to open the form
-        # <TODO: Why does this have to be held down on the second click to get the tooltip to display for the full time?
-        self.formselection.itemDoubleClicked.connect(lambda: self.open_form(self.formselection.currentItem().text()))
-        layout.addWidget(self.formselection)
+        # ^TODO: Why does this have to be held down on the second click to get the tooltip to display for the full time?
+        self.form_selection.itemDoubleClicked.connect(lambda: self.open_form(self.form_selection.currentItem().text()))
+        layout.addWidget(self.form_selection, 1, 0, 1, 6)
 
         # Button to select and open a form
         select_button = QPushButton("Select Form")
         # On clicking the select form button, send the selected text to open_form to handle opening the new tab
-        select_button.clicked.connect(lambda: self.open_form(self.formselection.currentItem().text()))
-        layout.addWidget(select_button)
+        select_button.clicked.connect(lambda: self.open_form(self.form_selection.currentItem().text()))
+        layout.addWidget(select_button, 2, 0, 1, 6)
+
+        # Domain Label
+        current_domain = QLabel(f"Domain: {self.DOMAIN_NAME}")
+        current_domain.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(current_domain, 0, 3, 1, 1)
+
+        # User Label
+        current_user = QLabel(f"User: {self.RUNNING_USER}")
+        current_user.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(current_user, 0, 4, 1, 1)
+
+        # Date Label
+        today = datetime.today().date()
+        formatted_date = today.strftime("%m/%d/%Y")
+        current_date = QLabel(f"Date: {formatted_date}")
+        current_date.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(current_date, 0, 5, 1, 1)
 
         self.tabs.formsTab.setLayout(layout)
 
@@ -96,13 +116,16 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         try:
             # When 'ctrl+h' is pressed change the active tab to 'Tools'
             if event.key() == Qt.Key.Key_H and event.modifiers() == Qt.KeyboardModifier.ControlModifier:
-                # Check if Ctrl+H is pressed
                 self.tabs.setCurrentIndex(self.tabs.indexOf(self.tabs.formsTab))
+            elif event.key() == Qt.Key.Key_N and event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+                # If Ctrl+N is pressed, open a New User page
+                self.open_form("new user")
 
             super(MainWindow, self).keyPressEvent(event)
         except Exception as e:
             print(f"That didn't work: {e}")
 
+    # noinspection PyArgumentList
     def open_form(self, name, args=None):
         if self.tabs.count() > 9:
             try:
@@ -112,8 +135,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
             except Exception as e:
                 print(f"There was an error displaying the tooltip: {e}")
         else:
-            ui_name = name.lower()  # Force lowercase form name
-            form_call = mapping.get(str(ui_name))  # Find the matching form instance in the 'mapping' tree
+            form_call = mapping.get(str(name))  # Find the matching form instance in the 'mapping' tree
             try:
                 if form_call:
                     if args is not None:  # If the form is being called with arguments, pass them to the form
@@ -266,7 +288,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         open_tabs_info = []
         for index in range(self.tabs.count()):
             tab_title = self.tabs.tabText(index)
-            if tab_title != "Tools" and tab_title.lower() in mapping:
+            if tab_title != "Tools" and tab_title in mapping:
                 open_tabs_info.append(tab_title)
 
         try:
