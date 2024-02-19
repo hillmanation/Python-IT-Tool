@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         # Button to select and open a form
         select_button = QPushButton("Select Form")
         # On clicking the select form button, send the selected text to open_form to handle opening the new tab
-        select_button.clicked.connect(lambda: self.open_form(self.form_selection.currentItem().text()))
+        select_button.clicked.connect(lambda: self.open_selected_form(self.form_selection.currentItem()))
         layout.addWidget(select_button, 2, 0, 1, 6)
 
         # Domain Label
@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
             print(f"That didn't work: {e}")
 
     # noinspection PyArgumentList
-    def open_form(self, name, args=None):
+    def open_form(self, name=None, args=None):
         if self.tabs.count() > 9:
             try:
                 # Display a tooltip near the mouse cursor
@@ -134,9 +134,9 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
                 self.show_tooltip("Max Number of Tabs Open!", mouse_pos, 2000)
             except Exception as e:
                 print(f"There was an error displaying the tooltip: {e}")
-        else:
-            form_call = mapping.get(str(name))  # Find the matching form instance in the 'mapping' tree
+        elif name is not None and name in mapping.keys():
             try:
+                form_call = mapping.get(str(name))  # Find the matching form instance in the 'mapping' tree
                 if form_call:
                     if args is not None:  # If the form is being called with arguments, pass them to the form
                         form_instance = form_call(self, args)
@@ -146,6 +146,13 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
                     self.current_form_instances.append(form_instance)
             except Exception as e:
                 print(f"There was an error opening the form: {e}")
+
+    def open_selected_form(self, selected_item):  # Added to prevent crashing when no item is selected
+        if selected_item:
+            self.open_form(selected_item.text())
+        else:
+            mouse_pos = QCursor.pos()
+            self.show_tooltip("Please select a form!", mouse_pos, 2000)
 
     def show_tooltip(self, text, pos, duration):
         QToolTip.showText(pos, text)

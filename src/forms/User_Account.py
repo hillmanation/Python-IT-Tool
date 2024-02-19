@@ -7,10 +7,12 @@ from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QLineEdit, QTabWidget,
 from src.widgets.user_tab_widget import UserTabWidget
 
 
+# noinspection PyUnresolvedReferences
 class useraccount_ui(QWidget):
     def __init__(self, main_app):
         super(useraccount_ui, self).__init__(main_app)
 
+        self.attribute_search_button = None
         self.attribute_layout = None
         self.attribute_search_box = None
         self.user_attributes = None
@@ -102,14 +104,20 @@ class useraccount_ui(QWidget):
         self.main_app.tabs.setTabIcon(tab_index, QIcon(':/material-icons/user_icon.png'))
         self.main_app.tabs.setCurrentIndex(tab_index)
         full_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self),
+                                                             general_tab))
         logon_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self),
+                                                             general_tab))
         first_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self),
+                                                             general_tab))
         last_name.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self),
+                                                             general_tab))
         description.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self),
+                                                             general_tab))
         email.textChanged.connect(
-            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self), general_tab))
+            lambda text: user_detail_tabs.get_current_values(general_tab_index, self.main_app.tabs.indexOf(self),
+                                                             general_tab))
