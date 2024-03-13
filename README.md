@@ -2,8 +2,6 @@
 
 The SDS User Management Tool is a robust and user-friendly application designed to simplify user management tasks within your organization. Whether you're an IT administrator, system operator, or anyone responsible for user-related operations, this tool aims to streamline your workflow.
 
-![image](https://media.github.build.ge.com/user/114690/files/6ec6347f-569a-4dfb-a560-bb52cad8b696)
-
 ## Features
 
 ### 1. Intuitive Interface
