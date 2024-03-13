@@ -48,11 +48,11 @@ from forms.your_new_form_file import YourNewFormUI
 ```
 Make sure to replace `your_new_form_file` with the actual filename of your new form.
 
-5. **Update the `mapping` variable in `main.py`**: Open the `main.py` file and locate the `mapping` variable. Add an entry for your new form, associating it with its corresponding class. For example:
+5. **Update the `mapping` variable in `import_modules.py`**: Open the `import_modules.py` file and locate the `mapping` variable. Add an entry for your new form, associating it with its corresponding class. For example:
 ```python
 mapping = {
     # ... other mappings
-    "your new form": YourNewFormUI,
+    "your new form": {"function": YourNewFormUI, "description": "Description of your form"}
 }
 ```
 Replace `"your new form"` with a unique identifier for your form and `YourNewFormUI` with the actual class name.

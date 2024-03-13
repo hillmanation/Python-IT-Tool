@@ -1,10 +1,11 @@
 import src.assets.resources
 from PyQt6.QtCore import *
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QColor
 from src.widgets.clearable_search_bar import ClearableSearchBar
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QLineEdit, QTabWidget, QFormLayout, QListWidget, \
-    QHBoxLayout, QCheckBox, QSizePolicy, QTableWidget, QPushButton, QStyle, QLayout, QGridLayout
+    QHBoxLayout, QCheckBox, QSizePolicy, QTableWidget, QPushButton, QStyle, QLayout, QGridLayout, QTableWidgetItem
 from src.widgets.user_tab_widget import UserTabWidget
+from src.widgets.watermark_table_widget import WatermarkTableWidget
 
 
 # noinspection PyUnresolvedReferences
@@ -71,11 +72,23 @@ class useraccount_ui(QWidget):
         # Member Of Tab
         member_of_layout = QVBoxLayout(member_of_tab)
 
-        self.member_of_info = QListWidget()
+        self.member_of_info = WatermarkTableWidget()
 
-        group_names = ["Group 1", "Group 2", "Group 3"]
-        for i in group_names:
-            self.member_of_info.addItem(str(i))
+        group_names = {"Group 1": {"description": "Group 1 Description"},  # Example data to populate member_of_info
+                       "Group 2": {"description": "Group 2 Description"},
+                       "Group 3": {"description": "Group 3 Description"}
+                       }
+        # Add the groups by pulling their names from group_names #TODO: Update this for the future non-test version
+        for row, group_name in enumerate(group_names):
+            self.member_of_info.insertRow(row)
+            key_item = QTableWidgetItem(group_name)
+            description_item = QTableWidgetItem(group_names[group_name]["description"])
+            self.member_of_info.setItem(row, 0, key_item)
+            font = description_item.font()
+            font.setItalic(True)
+            description_item.setFont(font)
+            description_item.setForeground(QColor(255, 255, 255, 96))
+            self.member_of_info.setItem(row, 1, description_item)
 
         member_of_layout.addWidget(self.member_of_info)
         
@@ -91,7 +104,7 @@ class useraccount_ui(QWidget):
         self.attribute_layout.addWidget(self.attribute_search_button, 0, 1, 1, 1)
 
         # Define the QTableWidget to hold user attributes
-        self.user_attributes = QTableWidget()
+        self.user_attributes = WatermarkTableWidget()
         self.attribute_layout.addWidget(self.user_attributes, 1, 0, 1, 2)
 
         # Add tabs to the main layout

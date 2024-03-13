@@ -63,6 +63,7 @@ class newuserform_ui(QWidget):  # Inherit from QWidget
             self.full_name = QLineEdit()
             self.full_name.setReadOnly(True)
             self.full_name.setPlaceholderText("Full Name will autogenerate here")
+            self.full_name.textChanged.connect(self.create_button_state)
             newuser_layout.addWidget(self.full_name, 2, 0, 1, 8)
 
             # Give user the ability to adjust the full name value (i.e. Smith1, Jr., III, etc.)
@@ -125,6 +126,7 @@ class newuserform_ui(QWidget):  # Inherit from QWidget
             self.account_names = QLineEdit()
             self.account_names.setReadOnly(True)
             self.account_names.setPlaceholderText("SamAccountNames to be created will be listed here")
+            self.account_names.textChanged.connect(self.create_button_state)
             newuser_layout.addWidget(self.account_names, 4, 0, 1, 8)
 
             self.edit_account_names = QCheckBox("Edit Accounts")
@@ -181,6 +183,7 @@ class newuserform_ui(QWidget):  # Inherit from QWidget
             button_layout.addWidget(self.easter_egg)
 
             self.create_button = QPushButton("Create Users")
+            self.create_button.setEnabled(False)
             button_layout.addWidget(self.create_button)
 
             self.clear_button = QPushButton("Clear Form")
@@ -231,8 +234,9 @@ class newuserform_ui(QWidget):  # Inherit from QWidget
             self.account_names.setReadOnly(True)
 
     def generate_account_names(self):
+        self.create_button_state()  # Enable or disable the 'Create Users' button
         try:
-            if not self.edit_account_names.isChecked():  # Only do this if editing on the account_names box is not enabled
+            if not self.edit_account_names.isChecked():  # Only do this if edit_account_names is not checked
                 if self.SSO_input.text() == "":  # If text is fully removed from SSO input, set account_names box to ""
                     self.account_names.setText("")
                     self.temp_password.setText("")
@@ -344,6 +348,17 @@ class newuserform_ui(QWidget):  # Inherit from QWidget
             self.easter_egg_opacity_effect.setOpacity(new_opacity)
         else:
             self.easter_egg.setToolTip("Congrats, you found me!....\nNow go back to work?")
+
+    def create_button_state(self):
+        # Check conditions and enable/disable the "Create Users" button accordingly
+        conditions_met = all([
+            self.first_name.text(),
+            self.last_name.text(),
+            self.full_name.text(),
+            self.SSO_input.text(),
+            self.account_names.text()
+        ])
+        self.create_button.setEnabled(conditions_met)
 
     def clear_form(self):
         # Clear text fields

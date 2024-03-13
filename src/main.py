@@ -1,12 +1,5 @@
 from src.import_modules import *
 
-mapping = {  # Map plain text to match a function we will call as a new tab
-    "New User": newuserform_ui,
-    "User Search": usersearchform_ui,
-    "User Account": useraccount_ui,
-    "Powershell Console": psform_ui
-}
-
 
 # noinspection PyUnresolvedReferences
 class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
@@ -15,9 +8,13 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
     CONFIG_JSON_PATH = os.path.join(APPDATA_LOCAL_PATH, 'sds_tool_config.json')
     DOMAIN_NAME = None
     RUNNING_USER = None
+    FAVORITES = []
 
     # Define main window and layout
     def __init__(self, parent=None):
+        self.favorites_tree = None
+        self.favorite_forms = None
+        self.select_button = None
         self.form_selection = None
         self.tabs = QTabWidget()
         super(MainWindow, self).__init__(parent)
@@ -51,7 +48,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         self.formsTabUI()
 
         # Now load the saved tab instances from the previous session if they exist
-        self.load_tab_state()
+        self.load_app_state()
 
         # Add a context menu to the tabs bar
         self.tabs.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
@@ -70,45 +67,49 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         font.setPointSize(15)
         forms_label.setFont(font)
         forms_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(forms_label, 0, 0, 1, 3)  # Row 0, Column 0, Span 1 row, 1 column
-
-        # List widget for displaying available forms
-        self.form_selection = QListWidget()  # <TODO: Change to a QTableWidget and reformat to add a 'Description' --->
-        # TODO:--->column for each form item
-
-        # Sort the list of form names
-        sorted_form_names = sorted(mapping.keys())
-
-        for form_name in sorted_form_names:  # Add the available forms by pulling their names from mapping
-            self.form_selection.addItem(form_name)
-
-        # Double-click an item to open the form
-        # ^TODO: Why does this have to be held down on the second click to get the tooltip to display for the full time?
-        self.form_selection.itemDoubleClicked.connect(lambda: self.open_form(self.form_selection.currentItem().text()))
-        layout.addWidget(self.form_selection, 1, 0, 1, 6)
-
-        # Button to select and open a form
-        select_button = QPushButton("Select Form")
-        # On clicking the select form button, send the selected text to open_form to handle opening the new tab
-        select_button.clicked.connect(lambda: self.open_selected_form(self.form_selection.currentItem()))
-        layout.addWidget(select_button, 2, 0, 1, 6)
+        layout.addWidget(forms_label, 0, 0, 1, 4)  # Row 0, Column 0, Span 1 row, 1 column
 
         # Domain Label
         current_domain = QLabel(f"Domain: {self.DOMAIN_NAME}")
         current_domain.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
-        layout.addWidget(current_domain, 0, 3, 1, 1)
+        layout.addWidget(current_domain, 0, 4, 1, 1)
 
         # User Label
         current_user = QLabel(f"User: {self.RUNNING_USER}")
         current_user.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
-        layout.addWidget(current_user, 0, 4, 1, 1)
+        layout.addWidget(current_user, 0, 5, 1, 1)
 
         # Date Label
         today = datetime.today().date()
         formatted_date = today.strftime("%m/%d/%Y")
         current_date = QLabel(f"Date: {formatted_date}")
         current_date.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
-        layout.addWidget(current_date, 0, 5, 1, 1)
+        layout.addWidget(current_date, 0, 6, 1, 1)
+
+        # List widget for displaying available forms
+        self.form_selection = WatermarkTableWidget()
+
+        # Add a context menu to the tabs bar
+        self.form_selection.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.form_selection.customContextMenuRequested.connect(self.show_list_context_menu)
+
+        # Populate the list widget
+        self.populate_form_list()
+
+        # Double-click an item to open the form
+        # ^TODO: Why does this have to be held down on the second click to get the tooltip to display for the full time?
+        self.form_selection.itemDoubleClicked.connect(
+            lambda: self.open_form(self.form_selection.item(self.form_selection.currentRow(), 0).text()))
+        self.form_selection.itemClicked.connect(self.enable_select_button)
+        layout.addWidget(self.form_selection, 1, 0, 1, 7)
+
+        # Button to select and open a form
+        self.select_button = QPushButton("Select Form")
+        self.select_button.setEnabled(False)
+        # On clicking the select form button, send the selected text to open_form to handle opening the new tab
+        self.select_button.clicked.connect(
+            lambda: self.open_form(self.form_selection.item(self.form_selection.currentRow(), 0).text()))
+        layout.addWidget(self.select_button, 2, 0, 1, 7)
 
         self.tabs.formsTab.setLayout(layout)
 
@@ -119,7 +120,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
                 self.tabs.setCurrentIndex(self.tabs.indexOf(self.tabs.formsTab))
             elif event.key() == Qt.Key.Key_N and event.modifiers() == Qt.KeyboardModifier.ControlModifier:
                 # If Ctrl+N is pressed, open a New User page
-                self.open_form("new user")
+                self.open_form("New User")
 
             super(MainWindow, self).keyPressEvent(event)
         except Exception as e:
@@ -127,16 +128,18 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
 
     # noinspection PyArgumentList
     def open_form(self, name=None, args=None):
-        if self.tabs.count() > 9:
+        if name is not None and self.tabs.count() > 9:
             try:
                 # Display a tooltip near the mouse cursor
                 mouse_pos = QCursor.pos()
                 self.show_tooltip("Max Number of Tabs Open!", mouse_pos, 2000)
             except Exception as e:
                 print(f"There was an error displaying the tooltip: {e}")
-        elif name is not None and name in mapping.keys():
+        elif name is not None and name.replace('*  ', '') in mapping.keys():
             try:
-                form_call = mapping.get(str(name))  # Find the matching form instance in the 'mapping' tree
+                # Find the matching form instance in the 'mapping' tree
+                form_info = mapping.get(name.replace('*  ', ''), {})
+                form_call = form_info.get("function")
                 if form_call:
                     if args is not None:  # If the form is being called with arguments, pass them to the form
                         form_instance = form_call(self, args)
@@ -147,18 +150,48 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
             except Exception as e:
                 print(f"There was an error opening the form: {e}")
 
-    def open_selected_form(self, selected_item):  # Added to prevent crashing when no item is selected
-        if selected_item:
-            self.open_form(selected_item.text())
-        else:
-            mouse_pos = QCursor.pos()
-            self.show_tooltip("Please select a form!", mouse_pos, 2000)
+    def enable_select_button(self):  # Enable the select button if an item becomes selected in form_selection
+        self.select_button.setEnabled(True)
 
     def show_tooltip(self, text, pos, duration):
         QToolTip.showText(pos, text)
         timer = QTimer(self)
         timer.timeout.connect(QToolTip.hideText)
         timer.start(duration)
+
+    def show_list_context_menu(self, point):
+        # Get the currently selected item in form_selection
+        current_row = self.form_selection.currentRow()
+
+        if current_row >= 0:  # Check if any item is selected
+            item = self.form_selection.item(self.form_selection.currentRow(), 0).text()
+            list_context_menu = QMenu(self)
+
+            # Add open_form action
+            open_form_action = QAction("Open Form", self)
+            # Pass the item to the open_form function
+            open_form_action.triggered.connect(lambda: self.open_form(str(item).replace('*  ', '')))
+            list_context_menu.addAction(open_form_action)
+
+            # Seperator
+            separator_action = QAction(self)
+            separator_action.setSeparator(True)
+            list_context_menu.addAction(separator_action)
+
+            if self.FAVORITES is not None and str(item).replace('*  ', '') not in self.FAVORITES:
+                # Add favorite action
+                add_favorite_action = QAction("Add to Favorites", self)
+                # Pass the item to the add_favorite function
+                add_favorite_action.triggered.connect(lambda: self.add_favorite(item))
+                list_context_menu.addAction(add_favorite_action)
+            else:
+                # Add favorite action
+                remove_favorite_action = QAction("Remove from Favorites", self)
+                # Pass the item to the add_favorite function
+                remove_favorite_action.triggered.connect(lambda: self.remove_favorite(str(item).replace('*  ', '')))
+                list_context_menu.addAction(remove_favorite_action)
+
+            list_context_menu.exec(self.form_selection.mapToGlobal(point))
 
     def show_tab_context_menu(self, point):
         try:
@@ -168,41 +201,60 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
             # Only show the context menu if the right-clicked tab is not the 'Tools' tab
             if index >= 0 and self.tabs.tabText(index) != "Tools":
                 # Show a context menu when right-clicking on a tab
-                context_menu = QMenu(self)
+                tab_context_menu = QMenu(self)
 
                 # Close Tab action
                 close_tab_action = QAction("Close Tab", self)
                 # Pass the index as data to the triggered signal
                 close_tab_action.triggered.connect(lambda: self.close_tab(index))
-                context_menu.addAction(close_tab_action)
+                tab_context_menu.addAction(close_tab_action)
 
                 # Duplicate Tab action
                 duplicate_tab_action = QAction("Duplicate Tab", self)
                 # Pass the index as data to the triggered signal
                 duplicate_tab_action.triggered.connect(lambda: self.duplicate_tab(index))
-                context_menu.addAction(duplicate_tab_action)
-
-                context_menu.exec(self.tabs.mapToGlobal(point))
-            elif index >= 0 and self.tabs.tabText(index) == "Tools" and self.tabs.count() > 1:
-                # Show a context menu when right-clicking on a tab
-                context_menu = QMenu(self)
-
-                # Close all other tabs action
-                close_all_tabs_action = QAction("Close All Tabs", self)
-                close_all_tabs_action.triggered.connect(lambda: self.close_all_tabs(index))
-                context_menu.addAction(close_all_tabs_action)
+                tab_context_menu.addAction(duplicate_tab_action)
 
                 # Seperator
                 separator_action = QAction(self)
                 separator_action.setSeparator(True)
-                context_menu.addAction(separator_action)
+                tab_context_menu.addAction(separator_action)
+
+                if self.FAVORITES is not None and self.tabs.tabText(index) not in self.FAVORITES:
+                    # Add favorite action
+                    add_favorite_action = QAction("Add to Favorites", self)
+                    # Pass the item to the add_favorite function
+                    add_favorite_action.triggered.connect(lambda: self.add_favorite(self.tabs.tabText(index)))
+                    tab_context_menu.addAction(add_favorite_action)
+                else:
+                    # Add favorite action
+                    remove_favorite_action = QAction("Remove from Favorites", self)
+                    # Pass the item to the add_favorite function
+                    remove_favorite_action.triggered.connect(lambda: self.remove_favorite(self.tabs.tabText(index)))
+                    tab_context_menu.addAction(remove_favorite_action)
+
+                tab_context_menu.exec(self.tabs.mapToGlobal(point))
+            elif index >= 0 and self.tabs.tabText(index) == "Tools":
+                # Show a context menu when right-clicking on a tab
+                tab_context_menu = QMenu(self)
+
+                # Close all other tabs action
+                if self.tabs.count() > 1:
+                    close_all_tabs_action = QAction("Close All Tabs", self)
+                    close_all_tabs_action.triggered.connect(lambda: self.close_all_tabs(index))
+                    tab_context_menu.addAction(close_all_tabs_action)
+
+                # Seperator
+                separator_action = QAction(self)
+                separator_action.setSeparator(True)
+                tab_context_menu.addAction(separator_action)
 
                 # About Info pop-up
                 about_info_action = QAction("About", self)
                 about_info_action.triggered.connect(self.open_about_info)
-                context_menu.addAction(about_info_action)
+                tab_context_menu.addAction(about_info_action)
 
-                context_menu.exec(self.tabs.mapToGlobal(point))
+                tab_context_menu.exec(self.tabs.mapToGlobal(point))
         except Exception as e:
             print(f"Error showing tab context menu: {e}")
 
@@ -285,12 +337,87 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         else:
             self.RUNNING_USER = config_data["user_name"]
 
+        if "favorites" in config_data and config_data["favorites"] is not None:
+            for favorite in config_data["favorites"]:
+                self.FAVORITES.append(favorite)
+
     def closeEvent(self, event):
         # Save tab state to the configuration file when the application is closed
-        self.save_tab_state()
+        self.save_app_state()
         event.accept()
 
-    def save_tab_state(self):
+    def populate_form_list(self):
+        # Clear the form_selection list to repopulate it with the sorted favorites/non-favorites
+        self.form_selection.clear()
+        # Reset the row count
+        self.form_selection.setRowCount(0)
+        # Sort the list of form names
+        all_form_names = sorted(mapping.keys())
+        # Check for the global favorites variable
+        if self.FAVORITES != "":
+            favorites = self.FAVORITES
+        else:
+            favorites = None
+
+        sorted_non_favorites = []
+        sorted_favorites = []
+        # Sort through the form names and separate out the favorites in a pre-sorted list
+        for name in all_form_names:
+            if name in favorites:
+                sorted_favorites.append(f"*  {name}")
+            else:
+                sorted_non_favorites.append(name)
+
+        sorted_form_names = []
+        # Populate the full list with the favorite items on top
+        for name in sorted_favorites:
+            sorted_form_names.append(name)
+        for name in sorted_non_favorites:
+            sorted_form_names.append(name)
+
+        # Add the available forms by pulling their names from mapping
+        for row, form_name in enumerate(sorted_form_names):
+            self.form_selection.insertRow(row)
+            key_item = QTableWidgetItem(form_name)
+            description_item = QTableWidgetItem(mapping[form_name.replace('*  ', '')]["description"])
+            self.form_selection.setItem(row, 0, key_item)
+            font = description_item.font()
+            font.setItalic(True)
+            description_item.setFont(font)
+            description_item.setForeground(QColor(255, 255, 255, 96))
+            self.form_selection.setItem(row, 1, description_item)
+
+    def add_favorite(self, name):
+        if name not in self.FAVORITES:
+            self.FAVORITES.append(name)
+            self.populate_form_list()
+            self.manage_favorites(self.FAVORITES)
+
+    def remove_favorite(self, name):
+        try:
+            if self.FAVORITES is not None and name in self.FAVORITES:
+                self.FAVORITES.remove(name)
+                self.populate_form_list()
+                self.manage_favorites(self.FAVORITES)
+        except Exception as e:
+            print(f"Unable to remove: {e}")
+
+    def manage_favorites(self, current_favorites=None):
+        try:
+            # Open the existing JSON config file or create an empty dictionary if it doesn't exist
+            with open(self.CONFIG_JSON_PATH, 'r') as config_file:
+                config_data = json.load(config_file)
+        except FileNotFoundError:
+            config_data = {}
+
+        if current_favorites is not None:
+            config_data["favorites"] = current_favorites
+
+        # Save the updated information to the JSON file
+        with open(self.CONFIG_JSON_PATH, 'w') as config_file:
+            json.dump(config_data, config_file, indent=2)
+
+    def save_app_state(self):
         # Get the currently open tabs
         open_tabs_info = []
         for index in range(self.tabs.count()):
@@ -312,7 +439,7 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
         with open(self.CONFIG_JSON_PATH, 'w') as config_file:
             json.dump(config_data, config_file, indent=2)
 
-    def load_tab_state(self):
+    def load_app_state(self):
         # Load tab state from the JSON file
         try:
             with open(self.CONFIG_JSON_PATH, 'r') as config_file:
@@ -334,7 +461,14 @@ class MainWindow(QMainWindow):  # Subclass QMainWindow for tool main window
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
+
+    loading_dialog = AppLoadingDialog()
+    app.processEvents()
+    loading_dialog.show()
+    app.processEvents()
     main_app = MainWindow()
+    app.processEvents()
     main_app.show()
+    loading_dialog.accept()
 
     sys.exit(app.exec())

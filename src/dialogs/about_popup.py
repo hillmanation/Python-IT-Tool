@@ -104,7 +104,7 @@ class WatermarkTextEdit(QTextEdit):
 
         # Draw the watermark image
         painter = QPainter(self.viewport())
-        watermark_image = QPixmap('assets/images/jake-head.png')
+        watermark_image = QPixmap(':/images/jake-head.png')
         painter.setOpacity(0.1)  # Adjust the opacity as needed
         painter.drawPixmap(self.rect(), watermark_image)
 

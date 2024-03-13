@@ -9,7 +9,6 @@ from src.widgets.powershell_classes import PSStyleOutput, PowershellStylePrompt
 
 
 class psform_ui(QWidget):
-
     def __init__(self, main_app):
         super(psform_ui, self).__init__(main_app)  # Pass main_app as the parent
         self.output_box = None

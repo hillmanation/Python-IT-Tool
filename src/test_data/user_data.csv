@@ -1,0 +1,6 @@
+Full Name,First Name,Last Name,Logon Name,Description,Email,OU,Enabled,Account Lockout Status,Group Membership,AD Attribute 1,AD Attribute 2
+John Doe,John,Doe,johndoe,john.doe@company.com,"John Doe, User Account",OU=Users,Enabled,Not Locked,Users,Value1,Value2
+Jane Smith,Jane,Smith,janesmith,jane.smith@company.com,"Jane Smith, User Account",OU=Users,Enabled,Not Locked,Users,Value1,Value2
+Bob Johnson,Bob,Johnson,bobjohnson,bob.johnson@company.com,"Bob Johnson, User Account",OU=Users,Enabled,Not Locked,Users,Value1,Value2
+Alice Williams,Alice,Williams,alicewilliams,alice.williams@company.com,"Alice Williams, User Account",OU=Users,Enabled,Not Locked,Users,Value1,Value2
+Charlie Brown,Charlie,Brown,charliebrown,charlie.brown@company.com,"Charlie Brown, User Account",OU=Users,Enabled,Not Locked,Users,Value1,Value2
