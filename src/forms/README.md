@@ -58,6 +58,6 @@ mapping = {
 Replace `"your new form"` with a unique identifier for your form and `YourNewFormUI` with the actual class name.
 
 ## Step 3: Run the Application
-After completing these steps, run the SDS User Management Tool application. You should see your new form in the Tools tab list. Opening this form will display the user interface you defined in your custom form class.
+After completing these steps, run the Python IT Management Tool application. You should see your new form in the Tools tab list. Opening this form will display the user interface you defined in your custom form class.
 
 Feel free to customize your form further and add additional functionalities based on your requirements.    
