@@ -1,6 +1,6 @@
 # Creating a New Form using `form_template.py`
 
-The SDS User Management Tool allows users to create custom forms that can be added as tabs to the main interface. This guide will walk you through the process of creating a new form using the `form_template.py` file provided in the `forms` folder.
+The Python IT Management Tool allows users to create custom forms that can be added as tabs to the main interface. This guide will walk you through the process of creating a new form using the `form_template.py` file provided in the `forms` folder.
 
 ## Step 1: Understanding the `form_template.py` File
 
